@@ -13,7 +13,7 @@ export default function Login() {
   const abortControllerRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    identifier: "",
+    email: "",
     password: "",
   });
   const [errors, setErrors] = useState({});
@@ -47,9 +47,11 @@ export default function Login() {
     const error = {};
 
     switch (name) {
-      case "identifier":
+      case "email":
         if (!value.trim()) {
-          error.identifier = "Email or phone number is required";
+          error.email = "Email address is required";
+        } else if (!/\S+@\S+\.\S+/.test(value)) {
+          error.email = "Please enter a valid email address";
         }
         break;
       case "password":
@@ -83,12 +85,12 @@ export default function Login() {
   };
 
   const validateForm = useCallback(() => {
-    const identifierError = validateField("identifier", formData.identifier);
+    const emailError = validateField("email", formData.email);
     const passwordError = validateField("password", formData.password);
-    const allErrors = { ...identifierError, ...passwordError };
+    const allErrors = { ...emailError, ...passwordError };
 
     setErrors(allErrors);
-    setTouched({ identifier: true, password: true });
+    setTouched({ email: true, password: true });
 
     return Object.keys(allErrors).length === 0;
   }, [formData, validateField]);
@@ -109,7 +111,7 @@ export default function Login() {
 
     try {
       const res = await axios.post("/auth/login", {
-        identifier: formData.identifier.trim(),
+        email: formData.email.trim(),
         password: formData.password
       }, {
         signal: abortControllerRef.current.signal,
@@ -177,22 +179,22 @@ export default function Login() {
           <div className="input-group">
             <input
               ref={firstInputRef}
-              id="identifier"
-              className={`${errors.identifier && touched.identifier ? 'error' : ''}`}
-              name="identifier"
-              type="text"
-              autoComplete="username"
-              value={formData.identifier}
+              id="email"
+              className={`${errors.email && touched.email ? 'error' : ''}`}
+              name="email"
+              type="email"
+              autoComplete="email"
+              value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={isLoading}
-              placeholder="Enter your email or phone"
-              aria-invalid={!!(errors.identifier && touched.identifier)}
-              aria-describedby={errors.identifier ? "identifier-error" : undefined}
+              placeholder="Enter your email address"
+              aria-invalid={!!(errors.email && touched.email)}
+              aria-describedby={errors.email ? "email-error" : undefined}
             />
-            {errors.identifier && touched.identifier && (
+            {errors.email && touched.email && (
               <span className="error-text" role="alert">
-                {errors.identifier}
+                {errors.email}
               </span>
             )}
           </div>
@@ -231,10 +233,7 @@ export default function Login() {
           </div>
 
           <div style={{textAlign: 'right', margin: '-8px 0 8px 0'}}>
-            <Link to="/forgot-password" className="auth-link" onClick={(e) => {
-              e.preventDefault();
-              alert("Forgot password feature coming soon!");
-            }}>
+            <Link to="/forgot-password" className="auth-link">
               Forgot password?
             </Link>
           </div>

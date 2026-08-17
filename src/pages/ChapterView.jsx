@@ -220,7 +220,10 @@ const ChapterView = () => {
                     ></div>
                   </div>
                 </div>
-                <p className="question-text">{questionsContent[currentInTextQuestion].question}</p>
+                <div 
+                  className="answer-content question-text" 
+                  dangerouslySetInnerHTML={{ __html: questionsContent[currentInTextQuestion].question }} 
+                />
                 
                 {!showInTextSolution && (
                   <button className="view-solution-btn" onClick={() => setShowInTextSolution(true)}>
@@ -238,17 +241,10 @@ const ChapterView = () => {
                     {questionsContent[currentInTextQuestion].reason && (
                       <div className="explanation-block">
                         <p><strong className="explanation-label">Explanation:</strong></p>
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          components={{
-                            table: ({...props}) => <table style={{ borderCollapse: 'collapse', width: '100%', margin: '12px 0' }} {...props} />,
-                            th: ({...props}) => <th style={{ border: '1px solid #ddd', padding: '8px 12px', backgroundColor: '#f0f4f8', fontWeight: 600 }} {...props} />,
-                            td: ({...props}) => <td style={{ border: '1px solid #ddd', padding: '8px 12px' }} {...props} />,
-                            p: ({...props}) => <p style={{ margin: '8px 0' }} {...props} />
-                          }}
-                        >
-                          {questionsContent[currentInTextQuestion].reason}
-                        </ReactMarkdown>
+                        <div 
+                          className="answer-content" 
+                          dangerouslySetInnerHTML={{ __html: questionsContent[currentInTextQuestion].reason }} 
+                        />
                       </div>
                     )}
                   </div>
@@ -305,12 +301,24 @@ const ChapterView = () => {
               <p>You got {numCorrect} out of {questionsContent.length} correct.</p>
               {questionsContent.map((q, index) => (
                 <div key={q._id || index} className="result-question">
-                  <p><strong>Question {index + 1}:</strong> {q.question}</p>
+                  <p><strong>Question {index + 1}:</strong></p>
+                  <div 
+                    className="answer-content" 
+                    dangerouslySetInnerHTML={{ __html: q.question }} 
+                  />
                   <div className="answer-row">
                     <p className="your-answer">Your answer: {q.options?.[answers[index]] || 'Not answered'}</p>
                     <p className="correct-answer">Correct answer: {q.options?.[q.answer]}</p>
                   </div>
-                  {q.reason && <p>Explanation: {q.reason}</p>}
+                  {q.reason && (
+                    <>
+                      <p><strong>Explanation:</strong></p>
+                      <div 
+                        className="answer-content" 
+                        dangerouslySetInnerHTML={{ __html: q.reason }} 
+                      />
+                    </>
+                  )}
                 </div>
               ))}
               <button onClick={() => {
@@ -324,7 +332,10 @@ const ChapterView = () => {
               {currentQuestion < questionsContent.length ? (
                 <div className="question-block">
                 <p>Question {currentQuestion + 1}</p>
-                <p>{questionsContent[currentQuestion].question}</p>
+                <div 
+                  className="answer-content" 
+                  dangerouslySetInnerHTML={{ __html: questionsContent[currentQuestion].question }} 
+                />
                   <div className="mcq-options">
                     {questionsContent[currentQuestion].options?.map((op, i) => (
                       <button
